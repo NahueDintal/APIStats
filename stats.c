@@ -127,7 +127,7 @@ void stats_histogram(double *data, int n, int bins) {
         if (counts[bin] > max_count) max_count = counts[bin];
     }
     
-    printf("\n📊 Histograma de latencias (%d bins):\n\n", bins);
+    printf("\nHistograma de latencias (%d bins):\n\n", bins);
     for (int b = 0; b < bins; b++) {
         double bin_start = min + (range / bins) * b;
         double bin_end = min + (range / bins) * (b + 1);
