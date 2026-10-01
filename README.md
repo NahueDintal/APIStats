@@ -9,7 +9,6 @@ Y luego exportar resultados de la muestra en .CSV o en .JSON
 # Ejemplo de salida con 1000 datos simulados.
 
 ./api_stats -n 1000 -v    
-´´
 Estadísticas de API simulada
 ============================
 
@@ -43,7 +42,7 @@ Histograma de latencias (10 bins):
     314.6 -   357.0 ms |  6
     357.0 -   399.5 ms |  4
     399.5 -   442.0 ms |  3
-´´
+    
 Uso: ./api_stats [OPCIONES]
 
 Simulación:
