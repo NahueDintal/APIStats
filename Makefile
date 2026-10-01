@@ -1,16 +1,16 @@
 CC = gcc
-CFLAGS = -O2 -Wall -Wextra -std=c11 -D_USE_MATH_DEFINES
-LDLIBS = -lm
+CFLAGS = -Wall -Wextra -std=c99 -lm
+TARGET = api_stats
+SRCS = main.c stats.c data.c export.c
+OBJS = $(SRCS:.c=.o)
 
-OBJ = main.o rng.o distributions.o data_source.o stats.o commands.o cli.o
-
-apistats: $(OBJ)
-	$(CC) $(CFLAGS) -o $@ $^ $(LDLIBS)
+$(TARGET): $(OBJS)
+	$(CC) -o $(TARGET) $(OBJS) $(CFLAGS)
 
 %.o: %.c
-	$(CC) $(CFLAGS) -c $< -o $@
+	$(CC) -c $< -o $@ $(CFLAGS)
 
 clean:
-	rm -f *.o apistats
+	rm -f $(OBJS) $(TARGET)
 
 .PHONY: clean

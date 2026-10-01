@@ -79,29 +79,27 @@ void stats_compute(Stats *s, double *data, int n, int *codes, int total_codes) {
     s->p_success = (double)s->success_count / total_codes;
 }
 
-// Imprimir bonito en consola
 void stats_print(Stats *s) {
-    printf("\n╔══════════════════════════════════════════╗\n");
-    printf("║       ESTADÍSTICAS DE API SIMULADA       ║\n");
-    printf("╠══════════════════════════════════════════╣\n");
-    printf("║  Requests totales:     %15d   ║\n", s->n);
-    printf("║  Latencia mínima:      %11.2f ms   ║\n", s->min);
-    printf("║  Latencia máxima:      %11.2f ms   ║\n", s->max);
-    printf("║  Media:                %11.2f ms   ║\n", s->mean);
-    printf("║  Mediana (p50):        %11.2f ms   ║\n", s->median);
-    printf("║  Desviación estándar:  %11.2f ms   ║\n", s->std_dev);
-    printf("║  Varianza:             %11.2f      ║\n", s->variance);
-    printf("╠══════════════════════════════════════════╣\n");
-    printf("║  Percentiles:                            ║\n");
-    printf("║    p90:                %11.2f ms   ║\n", s->p90);
-    printf("║    p95:                %11.2f ms   ║\n", s->p95);
-    printf("║    p99:                %11.2f ms   ║\n", s->p99);
-    printf("╠══════════════════════════════════════════╣\n");
-    printf("║  Códigos de estado:                      ║\n");
-    printf("║    Exitosos (2xx):     %15d   ║\n", s->success_count);
-    printf("║    Errores (5xx):      %15d   ║\n", s->error_count);
-    printf("║    P(éxito):           %14.4f   ║\n", s->p_success);
-    printf("╚══════════════════════════════════════════╝\n\n");
+    printf("Estadísticas de API simulada\n");
+    printf("============================\n\n");
+    
+    printf("Requests totales:  %d\n", s->n);
+    printf("Latencia mínima:   %.2f ms\n", s->min);
+    printf("Latencia máxima:   %.2f ms\n", s->max);
+    printf("Media:             %.2f ms\n", s->mean);
+    printf("Mediana (p50):     %.2f ms\n", s->median);
+    printf("Desviación std:    %.2f ms\n", s->std_dev);
+    printf("Varianza:          %.2f\n\n", s->variance);
+    
+    printf("Percentiles:\n");
+    printf("  p90:  %.2f ms\n", s->p90);
+    printf("  p95:  %.2f ms\n", s->p95);
+    printf("  p99:  %.2f ms\n\n", s->p99);
+    
+    printf("Códigos de estado:\n");
+    printf("  Exitosos (2xx):  %d\n", s->success_count);
+    printf("  Errores (5xx):   %d\n", s->error_count);
+    printf("  P(éxito):        %.4f\n\n", s->p_success);
 }
 
 // Histograma ASCII para el modo -v
