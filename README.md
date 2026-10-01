@@ -1,8 +1,11 @@
 # APIStats
 Trabajo practico para la materia Probabilidad y estadistica aplicada.
 
-El proyecto consiste en simular request Poisson vs límite del gateway, comparar endpoints ( diferencia de latencias entre A y B por ejemplo).
-Simular reintentos hasta éxito, y por el momento un histograma ASCII de una muestra.
+El proyecto consiste en simular request a una api, con id, latencia y respuesta del servicio.
+
+Con la posibilidad de hacer diferentes calculos con esos datos, como percentiles, media y desviación, probabilidades de exito o error, y un histograma.
+
+Y también un modo verboso para hacer todos esa devolución.
 
 Y luego exportar resultados de la muestra en .CSV o en .JSON
 
