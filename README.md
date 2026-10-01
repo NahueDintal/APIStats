@@ -9,7 +9,7 @@ Y también un modo verboso para hacer todos.
 
 Y luego exportar resultados de la muestra en .CSV o en .JSON
 
-# Ejemplo de salida con 1000 datos simulados.
+Ejemplo de salida con 1000 datos simulados.
 ```
 ./api_stats -n 1000 -v    
 Estadísticas de API simulada
@@ -46,6 +46,7 @@ Histograma de latencias (10 bins):
     357.0 -   399.5 ms |  4
     399.5 -   442.0 ms |  3
 ```
+Ejemplo del modo ayuda. --help
 ```
 Uso: ./api_stats [OPCIONES]
 
@@ -67,6 +68,5 @@ Análisis aislado:
 
 Otros:
   -v              Modo verbose (todo)
-```
   -h, --help      Mostrar ayuda
-
+```
