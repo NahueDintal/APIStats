@@ -5,7 +5,7 @@ El proyecto consiste en simular request a una api, con id, latencia y respuesta 
 
 Con la posibilidad de hacer diferentes calculos con esos datos, como percentiles, media y desviación, probabilidades de exito o error, y un histograma.
 
-Y también un modo verboso para hacer todos esa devolución.
+Y también un modo verboso para hacer todos.
 
 Y luego exportar resultados de la muestra en .CSV o en .JSON
 
