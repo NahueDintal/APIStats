@@ -3,9 +3,7 @@
 #include <stdlib.h>
 #include <math.h>
 
-// Ordenar con qsort (para percentiles y mediana)
 void stats_sort(double *data, int n) {
-    // qsort necesita una función comparadora
     int cmp(const void *a, const void *b) {
         double da = *(const double *)a;
         double db = *(const double *)b;
@@ -14,11 +12,10 @@ void stats_sort(double *data, int n) {
     qsort(data, n, sizeof(double), cmp);
 }
 
-// Calcular percentil p (0-100) sobre datos YA ORDENADOS
 double percentile(double *sorted_data, int n, double p) {
     if (n == 0) return 0.0;
     
-    double rank = (p / 100.0) * (n - 1);  // posición interpolada
+    double rank = (p / 100.0) * (n - 1);
     int lower = (int)rank;
     int upper = lower + 1;
     double frac = rank - lower;
@@ -27,7 +24,6 @@ double percentile(double *sorted_data, int n, double p) {
     return sorted_data[lower] + frac * (sorted_data[upper] - sorted_data[lower]);
 }
 
-// Media aritmética
 double stats_mean(double *data, int n) {
     if (n == 0) return 0.0;
     double sum = 0.0;
@@ -35,7 +31,6 @@ double stats_mean(double *data, int n) {
     return sum / n;
 }
 
-// Desviación estándar muestral (divide por n-1)
 double stats_std_dev(double *data, int n, double mean) {
     if (n < 2) return 0.0;
     double sum_sq = 0.0;
@@ -46,19 +41,16 @@ double stats_std_dev(double *data, int n, double mean) {
     return sqrt(sum_sq / (n - 1));
 }
 
-// Calcular TODO de una vez
 void stats_compute(Stats *s, double *data, int n, int *codes, int total_codes) {
     s->n = n;
     s->min = data[0];
     s->max = data[0];
     
-    // Encontrar min/max
     for (int i = 0; i < n; i++) {
         if (data[i] < s->min) s->min = data[i];
         if (data[i] > s->max) s->max = data[i];
     }
     
-    // Ordenar para percentiles (modifica el array original!)
     stats_sort(data, n);
     
     s->mean = stats_mean(data, n);
@@ -68,8 +60,6 @@ void stats_compute(Stats *s, double *data, int n, int *codes, int total_codes) {
     s->p99 = percentile(data, n, 99);
     s->std_dev = stats_std_dev(data, n, s->mean);
     s->variance = s->std_dev * s->std_dev;
-    
-    // Contar éxitos y errores por código HTTP
     s->success_count = 0;
     s->error_count = 0;
     for (int i = 0; i < total_codes; i++) {
@@ -102,7 +92,6 @@ void stats_print(Stats *s) {
     printf("  P(éxito):        %.4f\n\n", s->p_success);
 }
 
-// Histograma ASCII para el modo -v
 void stats_histogram(double *data, int n, int bins) {
     if (n == 0 || bins <= 0) return;
     
@@ -113,12 +102,11 @@ void stats_histogram(double *data, int n, int bins) {
     }
     
     double range = max - min;
-    if (range == 0) range = 1;  // evitar división por cero
+    if (range == 0) range = 1;
     
     int *counts = calloc(bins, sizeof(int));
     int max_count = 0;
     
-    // Contar en cada bin
     for (int i = 0; i < n; i++) {
         int bin = (int)((data[i] - min) / range * bins);
         if (bin >= bins) bin = bins - 1;
@@ -134,7 +122,6 @@ void stats_histogram(double *data, int n, int bins) {
         
         printf("  %7.1f - %7.1f ms | ", bin_start, bin_end);
         
-        // Barra proporcional (máximo 50 caracteres)
         int bar_len = (max_count > 0) ? (counts[b] * 50 / max_count) : 0;
         for (int j = 0; j < bar_len; j++) printf("█");
         printf(" %d\n", counts[b]);

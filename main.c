@@ -27,7 +27,6 @@ void print_help(void) {
 }
 
 int main(int argc, char *argv[]) {
-    // Defaults
     int n = 1000;
     unsigned int seed = time(NULL);
     double error_rate = 0.05;
@@ -37,7 +36,6 @@ int main(int argc, char *argv[]) {
     int show_prob = 0, show_hist = 0, verbose = 0;
     int hist_bins = 10;
     
-    // Parseo de flags
     for (int i = 1; i < argc; i++) {
         if (strcmp(argv[i], "-n") == 0 && i + 1 < argc) {
             n = atoi(argv[++i]);
@@ -86,19 +84,16 @@ int main(int argc, char *argv[]) {
         }
     }
     
-    // Si no pidió nada específico, mostrar todo
     if (!show_raw && !show_percentiles && !show_media && !show_prob && !show_hist && !json_out && !csv_out) {
         verbose = 1;
     }
     
-    // Simular datos
     srand(seed);
     double *latencias = malloc(n * sizeof(double));
     int *codigos = malloc(n * sizeof(int));
     
     data_simulate(latencias, codigos, n, error_rate);
     
-    // Mostrar datos crudos si se pidió
     if (show_raw) {
         printf("# Datos simulados (semilla=%u, n=%d)\n", seed, n);
         printf("id,latencia_ms,codigo\n");
@@ -108,11 +103,9 @@ int main(int argc, char *argv[]) {
         printf("\n");
     }
     
-    // Calcular estadísticas
     Stats s;
     stats_compute(&s, latencias, n, codigos, n);
     
-    // Mostrar según flags
     if (verbose) {
         stats_print(&s);
         stats_histogram(latencias, n, hist_bins);
@@ -139,7 +132,6 @@ int main(int argc, char *argv[]) {
         stats_histogram(latencias, n, hist_bins);
     }
     
-    // Exportar
     if (json_out) {
         export_json(json_out, &s, latencias, codigos, n);
         printf("JSON exportado a: %s\n", json_out);

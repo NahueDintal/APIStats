@@ -31,7 +31,6 @@ void export_json(const char *filename, Stats *s, double *latencias, int *codigos
     fprintf(f, "      \"prob_exito\": %.4f\n", s->p_success);
     fprintf(f, "    },\n");
     
-    // Datos crudos (primeros 100 para no inflar el archivo)
     fprintf(f, "    \"datos_muestra\": [\n");
     int muestra = (n < 100) ? n : 100;
     for (int i = 0; i < muestra; i++) {
