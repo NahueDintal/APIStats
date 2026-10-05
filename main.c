@@ -10,7 +10,6 @@ void print_help(void) {
     printf("Uso: apist [OPCIONES]\n\n");
     printf("Simulación:\n");
     printf("  -n <int>        Número de requests (default: 1000)\n");
-    printf("  -s <int>        Semilla para reproducibilidad\n");
     printf("  -e <float>      Tasa de error 0.0-1.0 (default: 0.05)\n\n");
     printf("Salida:\n");
     printf("  -o <archivo>    Exportar JSON\n");
@@ -35,7 +34,7 @@ int main(int argc, char *argv[]) {
     char *csv_out = NULL;
     int show_raw = 0, show_percentiles = 0, show_media = 0;
     int show_prob = 0, show_hist = 0, verbose = 0;
-    int hist_bins = 0;
+    int hist_bins = 10;
     
     for (int i = 1; i < argc; i++) {
         if (strcmp(argv[i], "-n") == 0 && i + 1 < argc) {
