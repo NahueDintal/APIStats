@@ -16,8 +16,8 @@ void print_help(void) {
     printf("  --csv <arch>    Exportar CSV\n");
     printf("  --raw           Mostrar datos en crudo\n\n");
     printf("Análisis aislado:\n");
-    printf("  --percentiles   Solo percentiles\n");
-    printf("  --media         Solo media y desviación\n");
+    printf("  --perc   Solo percentiles\n");
+    printf("  --med         Solo media y desviación\n");
     printf("  --prob          Solo probabilidades\n");
     printf("  --hist [bins]   Solo histograma\n\n");
     printf("Otros:\n");
@@ -27,9 +27,9 @@ void print_help(void) {
 }
 
 int main(int argc, char *argv[]) {
-    int n = 0;
+    int n = 100;
     unsigned int seed = time(NULL);
-    double error_rate = 0;
+    double error_rate = 0.2;
     char *json_out = NULL;
     char *csv_out = NULL;
     int show_raw = 0, show_percentiles = 0, show_media = 0;
@@ -55,10 +55,10 @@ int main(int argc, char *argv[]) {
         else if (strcmp(argv[i], "--raw") == 0) {
             show_raw = 1;
         }
-        else if (strcmp(argv[i], "--percentiles") == 0) {
+        else if (strcmp(argv[i], "--perc") == 0) {
             show_percentiles = 1;
         }
-        else if (strcmp(argv[i], "--media") == 0) {
+        else if (strcmp(argv[i], "--med") == 0) {
             show_media = 1;
         }
         else if (strcmp(argv[i], "--prob") == 0) {
