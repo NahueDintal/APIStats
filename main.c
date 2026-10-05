@@ -5,6 +5,8 @@
 #include "stats.h"
 #include "data.h"
 #include "export.h"
+#include "probabilidad.h"
+
 
 void print_help(void) {
     printf("Uso: apist [OPCIONES]\n\n");
@@ -20,10 +22,16 @@ void print_help(void) {
     printf("  --med         Solo media y desviación\n");
     printf("  --prob          Solo probabilidades\n");
     printf("  --hist [bins]   Solo histograma\n\n");
+    printf("Probabilidad:\n");
+    printf("  --clas <fav> <pos>       P(A) = favorables/posibles\n");
+    printf("  --frec <ev> <exp>     fr(A) = eventos/experimentos\n");
+    printf("  --indep <pa> <pb> <pab>  ¿A y B independientes?\n");
+    printf("  --ej                  Ejemplos de prueba de cada función\n\n");
     printf("Otros:\n");
     printf("  -v              Modo verbose (todo)\n");
     printf("  -h, --help      Mostrar ayuda\n");
     printf("  --version       Versión número.\n");
+
 }
 
 int main(int argc, char *argv[]) {
@@ -78,7 +86,33 @@ int main(int argc, char *argv[]) {
             return 0;
         }
         else if (strcmp(argv[i], "--version") == 0) {
-            fprintf(stderr, "Versión: 1.0.0\n");
+            fprintf(stderr, "Versión: 1.0.4\n");
+            return 0;
+        }
+        else if (strcmp(argv[i], "--clas") == 0 && i + 2 < argc) {
+            int fav = atoi(argv[++i]);
+            int pos = atoi(argv[++i]);
+            prob_print_clasica(fav, pos);
+            return 0;
+        }
+        else if (strcmp(argv[i], "--frec") == 0 && i + 2 < argc) {
+            int ev = atoi(argv[++i]);
+            int exp = atoi(argv[++i]);
+            prob_print_frecuencia(ev, exp);
+            return 0;
+        }
+        else if (strcmp(argv[i], "--indep") == 0 && i + 3 < argc) {
+            double pa = atof(argv[++i]);
+            double pb = atof(argv[++i]);
+            double pab = atof(argv[++i]);
+            prob_print_independencia(pa, pb, pab);
+            return 0;
+        }
+        else if (strcmp(argv[i], "--ej") == 0) {
+            // Ejemplos de prueba exigidos por la consigna (punto e)
+            prob_print_clasica(3, 6);          // dado: P(sacar par) = 3/6 = 0.5
+            prob_print_frecuencia(45, 100);    // 45 éxitos en 100 intentos = 0.45
+            prob_print_independencia(0.5, 0.5, 0.25);  // monedas independientes
             return 0;
         }
         else {
@@ -86,6 +120,7 @@ int main(int argc, char *argv[]) {
             fprintf(stderr, "Usa -h para ayuda. \n");
             return 1;
         }
+
     }
     
     if (!show_raw && !show_percentiles && !show_media && !show_prob && !show_hist && !json_out && !csv_out) {
@@ -127,10 +162,11 @@ int main(int argc, char *argv[]) {
         printf("Varianza: %.2f\n\n", s.variance);
     }
     if (show_prob) {
-        printf("Probabilidades:\n");
-        printf("  P(éxito 2xx): %.4f (%d/%d)\n", s.p_success, s.success_count, n);
-        printf("  P(error 5xx): %.4f (%d/%d)\n\n", 
-               (double)s.error_count/n, s.error_count, n);
+        double fr_exito = frecuencia_relativa(s.success_count, n);
+        double fr_error = frecuencia_relativa(s.error_count, n);
+        printf("Probabilidades empíricas (frecuencia relativa):\n");
+        printf("  P(éxito 2xx): %.4f (%d/%d)\n", fr_exito, s.success_count, n);
+        printf("  P(error 5xx): %.4f (%d/%d)\n\n", fr_error, s.error_count, n);
     }
     if (show_hist) {
         stats_histogram(latencias, n, hist_bins);
