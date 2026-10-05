@@ -7,7 +7,7 @@
 #include "export.h"
 
 void print_help(void) {
-    printf("Uso: ./api_stats [OPCIONES]\n\n");
+    printf("Uso: apist [OPCIONES]\n\n");
     printf("Simulación:\n");
     printf("  -n <int>        Número de requests (default: 1000)\n");
     printf("  -s <int>        Semilla para reproducibilidad\n");
@@ -24,17 +24,18 @@ void print_help(void) {
     printf("Otros:\n");
     printf("  -v              Modo verbose (todo)\n");
     printf("  -h, --help      Mostrar ayuda\n");
+    printf("  --version       Versión número.\n");
 }
 
 int main(int argc, char *argv[]) {
-    int n = 1000;
+    int n = 0;
     unsigned int seed = time(NULL);
-    double error_rate = 0.05;
+    double error_rate = 0;
     char *json_out = NULL;
     char *csv_out = NULL;
     int show_raw = 0, show_percentiles = 0, show_media = 0;
     int show_prob = 0, show_hist = 0, verbose = 0;
-    int hist_bins = 10;
+    int hist_bins = 0;
     
     for (int i = 1; i < argc; i++) {
         if (strcmp(argv[i], "-n") == 0 && i + 1 < argc) {
@@ -77,15 +78,19 @@ int main(int argc, char *argv[]) {
             print_help();
             return 0;
         }
+        else if (strcmp(argv[i], "--version") == 0) {
+            fprintf(stderr, "Versión: 1.0.0\n");
+            return 0;
+        }
         else {
-            fprintf(stderr, "Opción desconocida: %s\n", argv[i]);
-            fprintf(stderr, "Usa -h para ayuda\n");
+            fprintf(stderr, "Opción desconocida: %s.\n", argv[i]);
+            fprintf(stderr, "Usa -h para ayuda. \n");
             return 1;
         }
     }
     
     if (!show_raw && !show_percentiles && !show_media && !show_prob && !show_hist && !json_out && !csv_out) {
-        verbose = 1;
+      fprintf(stderr, "Usa -h ó --help para ayuda.\n");
     }
     
     srand(seed);
@@ -96,7 +101,7 @@ int main(int argc, char *argv[]) {
     
     if (show_raw) {
         printf("# Datos simulados (semilla=%u, n=%d)\n", seed, n);
-        printf("id,latencia_ms,codigo\n");
+        printf("id,latencia(milisegundos),codigo.\n");
         for (int i = 0; i < n; i++) {
             printf("%d,%.2f,%d\n", i+1, latencias[i], codigos[i]);
         }
