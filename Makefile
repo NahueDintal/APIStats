@@ -1,7 +1,7 @@
 CC = gcc
 CFLAGS = -Wall -Wextra -std=c99 -lm
 TARGET = api_stats
-SRCS = main.c stats.c data.c export.c probabilidad.c
+SRCS = main.c stats.c data.c export.c
 OBJS = $(SRCS:.c=.o)
 
 $(TARGET): $(OBJS)
