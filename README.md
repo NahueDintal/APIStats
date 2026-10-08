@@ -1,6 +1,10 @@
 # APIStats
 Trabajo practico para la materia Probabilidad y estadistica aplicada.
 
+La idea es generar un programa usable para el proximo a~no de la carrera, sin menu solo flags para poder automatizar, y usarlo de manera paralela con un programa corriendo. |
+
+Hoy simula consultas al servicio, ma~nana funcionara con datos reales.
+
 El proyecto consiste en simular request a una api, con id, latencia y respuesta del servicio.
 
 Con la posibilidad de hacer diferentes calculos con esos datos, como percentiles, media y desviación, probabilidades de exito o error, y un histograma.

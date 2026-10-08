@@ -14,7 +14,7 @@ void print_help(void) {
     printf("Salida:\n");
     printf("  -o <archivo>    Exportar JSON\n");
     printf("  --csv <arch>    Exportar CSV\n");
-    printf("  --raw           Mostrar datos en crudo\n\n");
+    printf("  --mostrar       Mostrar datos en crudo\n\n");
     printf("Análisis aislado:\n");
     printf("  --perc          Solo percentiles\n");
     printf("  --med           Solo media y desviación\n");
@@ -52,7 +52,7 @@ int main(int argc, char *argv[]) {
         else if (strcmp(argv[i], "--csv") == 0 && i + 1 < argc) {
             csv_out = argv[++i];
         }
-        else if (strcmp(argv[i], "--raw") == 0) {
+        else if (strcmp(argv[i], "--mostrar") == 0) {
             show_raw = 1;
         }
         else if (strcmp(argv[i], "--perc") == 0) {
@@ -131,8 +131,10 @@ int main(int argc, char *argv[]) {
         printf("Tasa de éxito/error de la API:\n");
         printf("  Éxitos (2xx): %.2f%% (%d/%d)\n",
                100.0 * s.success_count / n, s.success_count, n);
-        printf("  Errores (5xx): %.2f%% (%d/%d)\n\n",
+        printf("  Calculo:  100 * %d%% / %d%%  \n", s.success_count, s.success_count);
+        printf("  Errores (5xx): %.2f%% (%d/%d)\n",
                100.0 * s.error_count / n, s.error_count, n);
+        printf("  Calculo:  100 * %d%% / %d%%  \n\n", s.error_count, s.error_count);
     }
     if (show_hist) {
         stats_histogram(latencias, n, hist_bins);
