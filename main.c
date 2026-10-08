@@ -129,12 +129,12 @@ int main(int argc, char *argv[]) {
     }
     if (show_prob) {
         printf("Tasa de éxito/error de la API:\n");
+        printf("  Calculo:  100 * %d / %d = %.2f%%\n", s.success_count, n, 100.0 * s.success_count / n);
         printf("  Éxitos (2xx): %.2f%% (%d/%d)\n",
                100.0 * s.success_count / n, s.success_count, n);
-        printf("  Calculo:  100 * %d%% / %d%%  \n", s.success_count, s.success_count);
+        printf("  Calculo:  100 * %d / %d = %.2f%%\n", s.error_count, n, 100.0 * s.error_count / n);
         printf("  Errores (5xx): %.2f%% (%d/%d)\n",
                100.0 * s.error_count / n, s.error_count, n);
-        printf("  Calculo:  100 * %d%% / %d%%  \n\n", s.error_count, s.error_count);
     }
     if (show_hist) {
         stats_histogram(latencias, n, hist_bins);
