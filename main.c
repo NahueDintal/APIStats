@@ -1,10 +1,10 @@
+#include "data.h"
+#include "export.h"
+#include "stats.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
-#include "stats.h"
-#include "data.h"
-#include "export.h"
 
 void print_help(void) {
   printf("Uso: apist [OPCIONES]\n\n");
@@ -38,58 +38,47 @@ int main(int argc, char *argv[]) {
 
   for (int i = 1; i < argc; i++) {
     if (strcmp(argv[i], "-n") == 0 && i + 1 < argc) {
-        n = atoi(argv[++i]);
-    }
-    else if (strcmp(argv[i], "-s") == 0 && i + 1 < argc) {
-        seed = (unsigned int)atoi(argv[++i]);
-    }
-    else if (strcmp(argv[i], "-e") == 0 && i + 1 < argc) {
-        error_rate = atof(argv[++i]);
-    }
-    else if (strcmp(argv[i], "-o") == 0 && i + 1 < argc) {
-        json_out = argv[++i];
-    }
-    else if (strcmp(argv[i], "--csv") == 0 && i + 1 < argc) {
-        csv_out = argv[++i];
-    }
-    else if (strcmp(argv[i], "--mostrar") == 0) {
-        show_raw = 1;
-    }
-    else if (strcmp(argv[i], "--perc") == 0) {
-        show_percentiles = 1;
-    }
-    else if (strcmp(argv[i], "--med") == 0) {
-        show_media = 1;
-    }
-    else if (strcmp(argv[i], "--prob") == 0) {
-        show_prob = 1;
-    }
-    else if (strcmp(argv[i], "--hist") == 0) {
-        show_hist = 1;
-        if (i + 1 < argc && argv[i+1][0] != '-') {
-            hist_bins = atoi(argv[++i]);
-        }
-        if (hist_bins <= 0) hist_bins = 10;
-    }
-    else if (strcmp(argv[i], "-v") == 0) {
-        verbose = 1;
-    }
-    else if (strcmp(argv[i], "-h") == 0 || strcmp(argv[i], "--help") == 0) {
-        print_help();
-        return 0;
-    }
-    else if (strcmp(argv[i], "--version") == 0) {
-        fprintf(stderr, "Versión: 1.0.5\n");
-        return 0;
-    }
-    else {
-        fprintf(stderr, "Opción desconocida: %s.\n", argv[i]);
-        fprintf(stderr, "Usa -h para ayuda.\n");
-        return 1;
+      n = atoi(argv[++i]);
+    } else if (strcmp(argv[i], "-s") == 0 && i + 1 < argc) {
+      seed = (unsigned int)atoi(argv[++i]);
+    } else if (strcmp(argv[i], "-e") == 0 && i + 1 < argc) {
+      error_rate = atof(argv[++i]);
+    } else if (strcmp(argv[i], "-o") == 0 && i + 1 < argc) {
+      json_out = argv[++i];
+    } else if (strcmp(argv[i], "--csv") == 0 && i + 1 < argc) {
+      csv_out = argv[++i];
+    } else if (strcmp(argv[i], "--mostrar") == 0) {
+      show_raw = 1;
+    } else if (strcmp(argv[i], "--perc") == 0) {
+      show_percentiles = 1;
+    } else if (strcmp(argv[i], "--med") == 0) {
+      show_media = 1;
+    } else if (strcmp(argv[i], "--prob") == 0) {
+      show_prob = 1;
+    } else if (strcmp(argv[i], "--hist") == 0) {
+      show_hist = 1;
+      if (i + 1 < argc && argv[i + 1][0] != '-') {
+        hist_bins = atoi(argv[++i]);
+      }
+      if (hist_bins <= 0)
+        hist_bins = 10;
+    } else if (strcmp(argv[i], "-v") == 0) {
+      verbose = 1;
+    } else if (strcmp(argv[i], "-h") == 0 || strcmp(argv[i], "--help") == 0) {
+      print_help();
+      return 0;
+    } else if (strcmp(argv[i], "--version") == 0) {
+      fprintf(stderr, "Versión: 1.0.6\n");
+      return 0;
+    } else {
+      fprintf(stderr, "Opción desconocida: %s.\n", argv[i]);
+      fprintf(stderr, "Usa -h para ayuda.\n");
+      return 1;
     }
   }
 
-  if (!show_raw && !show_percentiles && !show_media && !show_prob && !show_hist && !json_out && !csv_out) {
+  if (!show_raw && !show_percentiles && !show_media && !show_prob &&
+      !show_hist && !json_out && !csv_out) {
     fprintf(stderr, "Usa -h ó --help para ayuda.\n");
   }
 
@@ -103,7 +92,7 @@ int main(int argc, char *argv[]) {
     printf("# Datos simulados (semilla=%u, n=%d)\n", seed, n);
     printf("id,latencia(milisegundos),codigo.\n");
     for (int i = 0; i < n; i++) {
-      printf("%d,%.2f,%d\n", i+1, latencias[i], codigos[i]);
+      printf("%d,%.2f,%d\n", i + 1, latencias[i], codigos[i]);
     }
     printf("\n");
   }
@@ -129,12 +118,14 @@ int main(int argc, char *argv[]) {
   }
   if (show_prob) {
     printf("Tasa de éxito/error de la API:\n");
-    printf("  Calculo:  100 * %d / %d = %.2f%%\n", s.success_count, n, 100.0 * s.success_count / n);
-    printf("  Éxitos (2xx): %.2f%% (%d/%d)\n",
-          100.0 * s.success_count / n, s.success_count, n);
-    printf("  Calculo:  100 * %d / %d = %.2f%%\n", s.error_count, n, 100.0 * s.error_count / n);
-    printf("  Errores (5xx): %.2f%% (%d/%d)\n",
-          100.0 * s.error_count / n, s.error_count, n);
+    printf("  Calculo:  100 * %d / %d = %.2f%%\n", s.success_count, n,
+           100.0 * s.success_count / n);
+    printf("  Éxitos (2xx): %.2f%% (%d/%d)\n", 100.0 * s.success_count / n,
+           s.success_count, n);
+    printf("  Calculo:  100 * %d / %d = %.2f%%\n", s.error_count, n,
+           100.0 * s.error_count / n);
+    printf("  Errores (5xx): %.2f%% (%d/%d)\n", 100.0 * s.error_count / n,
+           s.error_count, n);
   }
   if (show_hist) {
     stats_histogram(latencias, n, hist_bins);
