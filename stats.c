@@ -3,25 +3,38 @@
 #include <stdlib.h>
 #include <math.h>
 
-void stats_sort(double *data, int n) {
-    int cmp(const void *a, const void *b) {
-        double da = *(const double *)a;
-        double db = *(const double *)b;
-        return (da > db) - (da < db);
-    }
-    qsort(data, n, sizeof(double), cmp);
+static int cmp_double(const void *a, const void *b) {
+    double da = *(const double *)a;
+    double db = *(const double *)b;
+    return (da > db) - (da < db);
 }
 
-double percentile(double *sorted_data, int n, double p) {
-    if (n == 0) return 0.0;
-    
+void stats_sort(double *data, int n) {
+    qsort(data, n, sizeof(double), cmp_double);
+}
+
+Percentile percentile(double *sorted_data, int n, double p) {
+    Percentile r = {0};
+    if (n == 0) return r;
+
     double rank = (p / 100.0) * (n - 1);
-    int lower = (int)rank;
-    int upper = lower + 1;
-    double frac = rank - lower;
-    
-    if (upper >= n) return sorted_data[n - 1];
-    return sorted_data[lower] + frac * (sorted_data[upper] - sorted_data[lower]);
+    r.lower = (int)rank;
+    r.upper = r.lower + 1;
+    r.frac  = rank - r.lower;
+    r.v_lower = sorted_data[r.lower];
+
+    if (r.upper >= n) {
+        r.upper   = n - 1;
+        r.v_upper = sorted_data[n - 1];
+        r.frac    = 0.0;
+        r.clamped = 1;
+        r.value   = sorted_data[n - 1];
+        return r;
+    }
+
+    r.v_upper = sorted_data[r.upper];
+    r.value = r.v_lower + r.frac * (r.v_upper - r.v_lower);
+    return r;
 }
 
 double stats_mean(double *data, int n) {
@@ -45,21 +58,22 @@ void stats_compute(Stats *s, double *data, int n, int *codes, int total_codes) {
     s->n = n;
     s->min = data[0];
     s->max = data[0];
-    
+
     for (int i = 0; i < n; i++) {
         if (data[i] < s->min) s->min = data[i];
         if (data[i] > s->max) s->max = data[i];
     }
-    
+
     stats_sort(data, n);
-    
-    s->mean = stats_mean(data, n);
-    s->median = percentile(data, n, 50);
-    s->p90 = percentile(data, n, 90);
-    s->p95 = percentile(data, n, 95);
-    s->p99 = percentile(data, n, 99);
-    s->std_dev = stats_std_dev(data, n, s->mean);
+
+    s->mean     = stats_mean(data, n);
+    s->median   = percentile(data, n, 50);
+    s->p90      = percentile(data, n, 90);
+    s->p95      = percentile(data, n, 95);
+    s->p99      = percentile(data, n, 99);
+    s->std_dev  = stats_std_dev(data, n, s->mean);
     s->variance = s->std_dev * s->std_dev;
+
     s->success_count = 0;
     s->error_count = 0;
     for (int i = 0; i < total_codes; i++) {
@@ -72,20 +86,20 @@ void stats_compute(Stats *s, double *data, int n, int *codes, int total_codes) {
 void stats_print(Stats *s) {
     printf("Estadísticas de API simulada\n");
     printf("============================\n\n");
-    
+
     printf("Requests totales:  %d\n", s->n);
     printf("Latencia mínima:   %.2f ms\n", s->min);
     printf("Latencia máxima:   %.2f ms\n", s->max);
     printf("Media:             %.2f ms\n", s->mean);
-    printf("Mediana (p50):     %.2f ms\n", s->median);
+    printf("Mediana (p50):     %.2f ms\n", s->median.value);
     printf("Desviación std:    %.2f ms\n", s->std_dev);
     printf("Varianza:          %.2f\n\n", s->variance);
-    
+
     printf("Percentiles:\n");
-    printf("  p90:  %.2f ms\n", s->p90);
-    printf("  p95:  %.2f ms\n", s->p95);
-    printf("  p99:  %.2f ms\n\n", s->p99);
-    
+    printf("  p90:  %.2f ms\n", s->p90.value);
+    printf("  p95:  %.2f ms\n", s->p95.value);
+    printf("  p99:  %.2f ms\n\n", s->p99.value);
+
     printf("Códigos de estado:\n");
     printf("  Exitosos (2xx):  %d\n", s->success_count);
     printf("  Errores (5xx):   %d\n", s->error_count);
@@ -94,19 +108,19 @@ void stats_print(Stats *s) {
 
 void stats_histogram(double *data, int n, int bins) {
     if (n == 0 || bins <= 0) return;
-    
+
     double min = data[0], max = data[0];
     for (int i = 0; i < n; i++) {
         if (data[i] < min) min = data[i];
         if (data[i] > max) max = data[i];
     }
-    
+
     double range = max - min;
     if (range == 0) range = 1;
-    
+
     int *counts = calloc(bins, sizeof(int));
     int max_count = 0;
-    
+
     for (int i = 0; i < n; i++) {
         int bin = (int)((data[i] - min) / range * bins);
         if (bin >= bins) bin = bins - 1;
@@ -114,19 +128,19 @@ void stats_histogram(double *data, int n, int bins) {
         counts[bin]++;
         if (counts[bin] > max_count) max_count = counts[bin];
     }
-    
+
     printf("\nHistograma de latencias (%d bins):\n\n", bins);
     for (int b = 0; b < bins; b++) {
         double bin_start = min + (range / bins) * b;
-        double bin_end = min + (range / bins) * (b + 1);
-        
+        double bin_end   = min + (range / bins) * (b + 1);
+
         printf("  %7.1f - %7.1f ms | ", bin_start, bin_end);
-        
+
         int bar_len = (max_count > 0) ? (counts[b] * 50 / max_count) : 0;
         for (int j = 0; j < bar_len; j++) printf("█");
         printf(" %d\n", counts[b]);
     }
     printf("\n");
-    
+
     free(counts);
 }
