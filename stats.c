@@ -140,7 +140,79 @@ void stats_histogram(double *data, int n, int bins) {
         for (int j = 0; j < bar_len; j++) printf("█");
         printf(" %d\n", counts[b]);
     }
+
+    printf("\n  Tendencia: ");
+    stats_sparkline(counts, bins);
     printf("\n");
 
     free(counts);
+}
+
+/* ─────────── Visualización ─────────── */
+
+void stats_pct_bar(double pct, int width) {
+    if (width <= 0) width = 40;
+    if (pct < 0) pct = 0;
+    if (pct > 100) pct = 100;
+
+    int fill = (int)(pct / 100.0 * width + 0.5);
+    if (fill > width) fill = width;
+
+    for (int i = 0; i < fill; i++) printf("█");
+    for (int i = fill; i < width; i++) printf("░");
+}
+
+void stats_sparkline(const int *values, int n) {
+    static const char *bars[] = {"▁","▂","▃","▄","▅","▆","▇","█"};
+    if (n <= 0) return;
+
+    int max = values[0];
+    for (int i = 1; i < n; i++)
+        if (values[i] > max) max = values[i];
+    if (max == 0) max = 1;
+
+    for (int i = 0; i < n; i++) {
+        int level = values[i] * 7 / max;
+        if (level < 0) level = 0;
+        if (level > 7) level = 7;
+        printf("%s", bars[level]);
+    }
+}
+
+void stats_boxplot(double min, double p50, double p90, double p95, double p99,
+                   double max, int width) {
+    if (width < 20) width = 20;
+    double range = max - min;
+    if (range <= 0) range = 1;
+
+    int pos_min = 0;
+    int pos_p50 = (int)((p50 - min) / range * (width - 1) + 0.5);
+    int pos_p90 = (int)((p90 - min) / range * (width - 1) + 0.5);
+    int pos_p95 = (int)((p95 - min) / range * (width - 1) + 0.5);
+    int pos_p99 = (int)((p99 - min) / range * (width - 1) + 0.5);
+    int pos_max = width - 1;
+
+    printf("  Box plot (rango %.1f – %.1f ms)\n", min, max);
+    printf("    ├ min   █ p50   ═ rango p50-p90   ╪ p90   ┼ p95   · p99   ┤ max\n\n");
+
+    printf("  ");
+    for (int i = 0; i < width; i++) {
+        if      (i == pos_min) printf("├");
+        else if (i == pos_p50) printf("█");
+        else if (i == pos_p90) printf("╪");
+        else if (i == pos_p95) printf("┼");
+        else if (i == pos_p99) printf("·");
+        else if (i == pos_max) printf("┤");
+        else if (i > pos_p50 && i < pos_p90) printf("═");
+        else printf("─");
+    }
+    printf("\n");
+
+    printf("  %*.1f%*.1f%*.1f%*.1f%*.1f%*.1f\n",
+           pos_min + 1, min,
+           pos_p50 - pos_min, p50,
+           pos_p90 - pos_p50, p90,
+           pos_p95 - pos_p90, p95,
+           pos_p99 - pos_p95, p99,
+           pos_max - pos_p99, max);
 }

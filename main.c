@@ -8,13 +8,13 @@
 
 static void print_percentile(const char *name, Percentile p) {
     if (p.clamped) {
-        printf("  %s: %.2f ms   [sorted[%d]=%.2f (último, sin interpolación)]\n",
+        printf("  %-3s: %7.2f ms   [sorted[%3d]=%.2f (último, sin interpolación)]\n",
                name, p.value, p.lower, p.v_lower);
     } else if (p.frac == 0.0) {
-        printf("  %s: %.2f ms   [sorted[%d]=%.2f]\n",
+        printf("  %-3s: %7.2f ms   [sorted[%3d]=%.2f]\n",
                name, p.value, p.lower, p.v_lower);
     } else {
-        printf("  %s: %.2f ms   [sorted[%d]=%.2f + %.4f * (sorted[%d]=%.2f - %.2f)]\n",
+        printf("  %-3s: %7.2f ms   [sorted[%3d]=%.2f + %.4f * (sorted[%3d]=%.2f - %.2f)]\n",
                name, p.value,
                p.lower, p.v_lower,
                p.frac,
@@ -79,12 +79,17 @@ int main(int argc, char *argv[]) {
             if (hist_bins <= 0)
                 hist_bins = 10;
         } else if (strcmp(argv[i], "-v") == 0) {
+
             verbose = 1;
+            // show_percentiles = 1;
+            // show_media       = 1;
+            // show_prob        = 1;
+            // show_hist        = 1;
         } else if (strcmp(argv[i], "-h") == 0 || strcmp(argv[i], "--help") == 0) {
             print_help();
             return 0;
         } else if (strcmp(argv[i], "--version") == 0) {
-            fprintf(stderr, "Versión: 1.0.6\n");
+            fprintf(stderr, "Versión: 1.0.7\n");
             return 0;
         } else {
             fprintf(stderr, "Opción desconocida: %s.\n", argv[i]);
@@ -117,16 +122,22 @@ int main(int argc, char *argv[]) {
     stats_compute(&s, latencias, n, codigos, n);
 
     if (verbose) {
-        stats_print(&s);
-        stats_histogram(latencias, n, hist_bins);
+        show_percentiles = 1;
+        show_media       = 1;
+        show_prob        = 1;
+        show_hist        = 1;
     }
     if (show_percentiles) {
-        printf("Percentiles (interpolación lineal, N=%d):\n", s.n);
-        print_percentile("p50", s.median);
-        print_percentile("p90", s.p90);
-        print_percentile("p95", s.p95);
-        print_percentile("p99", s.p99);
-        printf("\n");
+      printf("Percentiles (interpolación lineal, N=%d):\n", s.n);
+      print_percentile("p50", s.median);
+      print_percentile("p90", s.p90);
+      print_percentile("p95", s.p95);
+      print_percentile("p99", s.p99);
+      printf("\n");
+
+      stats_boxplot(s.min, s.median.value, s.p90.value, s.p95.value,
+                    s.p99.value, s.max, 60);
+      printf("\n");
     }
     if (show_media) {
         printf("Media: %.2f ms\n", s.mean);
@@ -134,15 +145,18 @@ int main(int argc, char *argv[]) {
         printf("Varianza: %.2f\n\n", s.variance);
     }
     if (show_prob) {
-        printf("Tasa de éxito/error de la API:\n");
-        printf("  Calculo:  100 * %d / %d = %.2f%%\n", s.success_count, n,
-               100.0 * s.success_count / n);
-        printf("  Éxitos (2xx): %.2f%% (%d/%d)\n", 100.0 * s.success_count / n,
-               s.success_count, n);
-        printf("  Calculo:  100 * %d / %d = %.2f%%\n", s.error_count, n,
-               100.0 * s.error_count / n);
-        printf("  Errores (5xx): %.2f%% (%d/%d)\n", 100.0 * s.error_count / n,
-               s.error_count, n);
+      printf("Tasa de éxito/error de la API:\n");
+      printf("  Calculo:  100 * %d / %d = %.2f%%\n", s.success_count, n,
+            100.0 * s.success_count / n);
+      printf("  Éxitos (2xx): %6.2f%% [", 100.0 * s.success_count / n);
+      stats_pct_bar(100.0 * s.success_count / n, 40);
+      printf("] (%d/%d)\n", s.success_count, n);
+
+      printf("  Calculo:  100 * %d / %d = %.2f%%\n", s.error_count, n,
+            100.0 * s.error_count / n);
+      printf("  Errores (5xx): %5.2f%% [", 100.0 * s.error_count / n);
+      stats_pct_bar(100.0 * s.error_count / n, 40);
+      printf("] (%d/%d)\n\n", s.error_count, n);
     }
     if (show_hist) {
         stats_histogram(latencias, n, hist_bins);

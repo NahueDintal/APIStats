@@ -15,14 +15,12 @@ void export_json(const char *filename, Stats *s, double *latencias, int *codigos
   fprintf(f, "      \"min_ms\": %.2f,\n", s->min);
   fprintf(f, "      \"max_ms\": %.2f,\n", s->max);
   fprintf(f, "      \"mean_ms\": %.2f,\n", s->mean);
-  fprintf(f, "      \"median_ms\": %.2f,\n", s->median);
+  fprintf(f, "      \"median_ms\": %.2f,\n", s->median.value);
   fprintf(f, "      \"std_dev_ms\": %.2f,\n", s->std_dev);
   fprintf(f, "      \"variance\": %.2f,\n", s->variance);
-  fprintf(f, "      \"percentiles\": {\n");
-  fprintf(f, "        \"p90_ms\": %.2f,\n", s->p90);
-  fprintf(f, "        \"p95_ms\": %.2f,\n", s->p95);
-  fprintf(f, "        \"p99_ms\": %.2f\n", s->p99);
-  fprintf(f, "      }\n");
+  fprintf(f, "        \"p90_ms\": %.2f,\n", s->p90.value);
+  fprintf(f, "        \"p95_ms\": %.2f,\n", s->p95.value);
+  fprintf(f, "        \"p99_ms\": %.2f\n",  s->p99.value);
   fprintf(f, "    },\n");
   fprintf(f, "    \"codigos_estado\": {\n");
   fprintf(f, "      \"exitosos_2xx\": %d,\n", s->success_count);

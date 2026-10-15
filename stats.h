@@ -2,13 +2,13 @@
 #define STATS_H
 
 typedef struct {
-    double value;    /* resultado final */
-    int    lower;    /* índice lower */
-    int    upper;    /* índice upper */
-    double frac;     /* fracción de interpolación */
-    double v_lower;  /* sorted_data[lower] */
-    double v_upper;  /* sorted_data[upper] */
-    int    clamped;  /* 1 si cayó en el caso upper >= n */
+    double value;
+    int    lower;
+    int    upper;
+    double frac;
+    double v_lower;
+    double v_upper;
+    int    clamped;
 } Percentile;
 
 typedef struct {
@@ -28,5 +28,11 @@ double stats_std_dev(double *data, int n, double mean);
 void stats_compute(Stats *s, double *data, int n, int *codes, int total_codes);
 void stats_print(Stats *s);
 void stats_histogram(double *data, int n, int bins);
+
+/* Visualización */
+void stats_pct_bar(double pct, int width);
+void stats_sparkline(const int *values, int n);
+void stats_boxplot(double min, double p50, double p90, double p95, double p99,
+                   double max, int width);
 
 #endif
