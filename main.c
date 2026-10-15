@@ -89,7 +89,7 @@ int main(int argc, char *argv[]) {
             print_help();
             return 0;
         } else if (strcmp(argv[i], "--version") == 0) {
-            fprintf(stderr, "Versión: 1.0.7\n");
+            fprintf(stderr, "Versión: 1.1.0\n");
             return 0;
         } else {
             fprintf(stderr, "Opción desconocida: %s.\n", argv[i]);
