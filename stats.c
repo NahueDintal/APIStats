@@ -66,13 +66,24 @@ void stats_compute(Stats *s, double *data, int n, int *codes, int total_codes) {
 
     stats_sort(data, n);
 
-    s->mean     = stats_mean(data, n);
+    /* Media + suma (para mostrar el cálculo) */
+    s->sum = 0.0;
+    for (int i = 0; i < n; i++) s->sum += data[i];
+    s->mean = (n > 0) ? s->sum / n : 0.0;
+
+    /* Varianza + desviación + suma de cuadrados */
+    s->sum_sq = 0.0;
+    for (int i = 0; i < n; i++) {
+        double diff = data[i] - s->mean;
+        s->sum_sq += diff * diff;
+    }
+    s->variance = (n > 1) ? s->sum_sq / (n - 1) : 0.0;
+    s->std_dev  = sqrt(s->variance);
+
     s->median   = percentile(data, n, 50);
     s->p90      = percentile(data, n, 90);
     s->p95      = percentile(data, n, 95);
     s->p99      = percentile(data, n, 99);
-    s->std_dev  = stats_std_dev(data, n, s->mean);
-    s->variance = s->std_dev * s->std_dev;
 
     s->success_count = 0;
     s->error_count = 0;

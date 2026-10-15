@@ -15,6 +15,8 @@ typedef struct {
     int    n;
     double min, max;
     double mean;
+    double sum;          /* Σx, para mostrar la media */
+    double sum_sq;       /* Σ(x-μ)², para varianza/std */
     Percentile median, p90, p95, p99;
     double std_dev, variance;
     int    success_count, error_count;
